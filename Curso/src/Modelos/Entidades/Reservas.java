@@ -1,8 +1,10 @@
-package Entidades.Modelos;
+package Modelos.Entidades;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+
+import Modelos.Excecoes.DomainException;
 
 public class Reservas {
 
@@ -17,6 +19,9 @@ public class Reservas {
 	}
 
 	public Reservas(Integer numeroQuarto, Date checkIn, Date checkOut) {
+		if (!checkOut.after(checkIn)) {
+			throw new DomainException("Erro na reserva: Data do check-out e anterior a data de check-in");
+		}
 		this.numeroQuarto = numeroQuarto;
 		this.checkIn = checkIn;
 		this.checkOut = checkOut;
@@ -43,16 +48,15 @@ public class Reservas {
 		return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
 	}
 	
-	public String atualizacaoDatas(Date checkIn, Date checkOut) {
+	public void atualizacaoDatas(Date checkIn, Date checkOut) {
 		Date now = new Date();
 		if (checkIn.before(now) || checkOut.before(now)) {
-			return "Erro na reserva: Os novos dados da reserve tem que ser dados futuros";
+			throw new DomainException("Erro na reserva: Os novos dados da reserve tem que ser dados futuros");
 		} if (!checkOut.after(checkIn)) {
-			return "Erro na reserva: Data do check-out e anterior a data de check-in";
+			throw new DomainException("Erro na reserva: Data do check-out e anterior a data de check-in");
 		}
 		this.checkIn = checkIn;
 		this.checkOut = checkOut;
-		return null;
 	}
 	
 	@Override
